@@ -1,10 +1,33 @@
-<doctype html>
+<!doctype html>
 <html>
-  <head>
-    <title>Parser Thing</title>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-  </head>
-  <body>
-    <h1>Test</h1>
-  </body>
+    <head>
+        <title>Parser Thing</title>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.css"/>
+
+        <link rel="stylesheet" href="style.css"/>
+
+        <script src="js/state.js"></script>
+        <script src="js/diagram.js"></script>
+        <script>
+            var stateOne = new State("one"),
+                stateTwo = new State("two"),
+                stateThree = new State("three");
+            stateOne.add([stateTwo,stateThree]);
+            stateTwo.add([stateTwo,stateThree]);
+        </script>
+    </head>
+    <body>
+        <h1>Test</h1>
+        <div id="testContainer" class="stateDiagram"></div>
+        <script>
+            console.log(Diagram.buildData([stateOne,stateTwo,stateThree]));
+            var testContainer = document.getElementById('testContainer'),
+                diagramTest = new Diagram(
+                    testContainer,
+                    [stateOne,stateTwo,stateThree]
+                );
+        </script>
+    </body>
 </html>
