@@ -11,23 +11,35 @@
         <script src="js/state.js"></script>
         <script src="js/diagram.js"></script>
         <script>
-            var stateOne = new State("one"),
-                stateTwo = new State("two"),
-                stateThree = new State("three");
-            stateOne.add([stateTwo,stateThree]);
-            stateTwo.add([stateTwo,stateThree]);
+            function genStateArray(c,i,a) {
+                a = a || []; i = i || 1;
+                if(!c) return a;
+                a.push(new State(String.fromCharCode(i+64)));
+                return genStateArray(c-1,i+1,a);
+            }
+            var set1 = genStateArray(9),
+                set2 = genStateArray(9);
+            set1[0].add([set1[1],set1[2]]);
+            set1[1].add([set1[3]]);
+            //set1[3].add([set1[0]]);
+            set2[4].add([set2[1],set2[6]]);
+            set2[1].add([set2[3]]);
+            set2[3].add([set2[6]]);
+            set2[6].add([set2[4]]);
+            set2[5].add([set2[1]]);
+            //copy = set1[0].deepCopy();
         </script>
     </head>
     <body>
         <h1>Test</h1>
         <div id="testContainer" class="stateDiagram"></div>
         <script>
-            console.log(Diagram.buildData([stateOne,stateTwo,stateThree]));
             var testContainer = document.getElementById('testContainer'),
                 diagramTest = new Diagram(
                     testContainer,
-                    [stateOne,stateTwo,stateThree]
+                    [set1[0],set2[4]]
                 );
+            diagramTest.makeLive();
         </script>
     </body>
 </html>
