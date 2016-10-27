@@ -1,13 +1,12 @@
 class Diagram {
     constructor(element,states) {
-        this.stateHolder = new State("DiagramParent");
+        this.stateHolder = new AnimState("DiagramParent");
         this.stateHolder.add(states);
         this.stateIDs = this.stateHolder.subStateIDs();
         this.states = this.stateHolder.subStates();
         this.buildData(this.states);
         this.options = {};
         this.network = new vis.Network(element,this.data,this.options);
-        this.animationDelay = 5000;
     }
 
     makeLive() {
@@ -15,9 +14,12 @@ class Diagram {
     }
 
     refresh(ev) {
-        console.log(ev);
+        //console.log(ev);
         if(ev.eName === "add") {
             this.addGroup(ev.from,ev.to);
+        }
+        if(ev.eName === "update") {
+            this.updateNode(ev.node);
         }
     }
 
@@ -47,10 +49,20 @@ class Diagram {
     }
 
     addNode(node) {
-        this.nodes.add({
+        this.nodes.add(this.nodeObject(node));
+    }
+
+    updateNode(node) {
+        console.log(this.nodeObject(node));
+        this.nodes.update([this.nodeObject(node)]);
+    }
+
+    nodeObject(node) {
+        return {
             id: node.id,
-            label: node.label
-        });
+            label: node.label,
+            color: node.mergeCentre ? "lightGreen" : "lightBlue"
+        }
     }
 
     addEdge(to,from) {

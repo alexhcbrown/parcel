@@ -4,26 +4,23 @@
         stateList = [];
 
     class State {
-        constructor(label, onChange, changeContext) {
+        constructor(label) {
             this.label = label;
             this.states = [];
             this.id = stateCount++;
-            this.mergeCentre = false;
-            this.onChange = onChange;
-            this.changeContext = changeContext;
-            this.animStep = 1000;
             stateList[this.id] = this;
         }
 
         copy() {
-            let copy = new State(this.label,this.onChange,this.changeContext);
+            let copy = new State(this.label);
             copy.states = this.states;
             return copy;
         }
 
         deepCopy(copiedIDs,copied) {
-            let copy = new State(this.label,this.onChange,this.changeContext),
+            let copy = this.copy(),
                 states = this.states.slice();
+            copy.states = [];
             copiedIDs = copiedIDs || []; copied = copied || {};
             copiedIDs.push(this.id);
             copied[this.id] = copy;
@@ -39,80 +36,33 @@
             return copy;
         }
 
-        setOnChange(callback,context) {
-            this.onChange = callback;
-            this.changeContext = context;
-            this.subStates().forEach(state => {
-                state.onChange = callback;
-                state.changeContext = context;
-            });
-        }
-
-        fireOnChange(ev) {
-            if(this.onChange) this.onChange.call(this.changeContext,ev);
-        }
-
         merge(states) {
             // if there is no state with the same label, add to states
             // otherwise recurse with current state of that label and
             // the sub-states from the state to merge
-            //this.mergeCentre = true;
-            //this.fireOnChange();
             for(let i=0, sL=states.length, s, current; i<sL; i++) {
                 this.mergeOne(states[i]);
             }
-            //this.mergeCentre = false;
-            //this.fireOnChange();
         }
 
-        mergeAnim(states) {
-            states = states.slice();
-            (function stateStep(states,current) {
-                this.mergeOne(states.shift(),true);
-                if(states.length>0)
-                    setTimeout(
-                        () => {stateStep.call(this,states)},
-                        this.animStep
-                    );
-            }).call(this,states);
-        }
-
-        mergeOne(s,anim) {
-            anim = anim || false;
-            let current = this.states.find(function(checkState) {
-                return checkState.label === s.label;
-            });
+        mergeOne(s) {
+            let current = this.select(s.label);
             if(typeof current === "undefined") this.add([s.deepCopy()]);
-            else {
-                if(anim)
-                    current.mergeAnim(s.states);
-                else
-                    current.merge(s.states);
-            }
+            else current.merge(s.states);
+        }
+
+        select(label) {
+            return this.states.find(function(checkState) {
+                return checkState.label === label;
+            });
         }
 
         add(states) {
-            for(let i=0,l=states.length;i<l;i++) this.addWorker(states[i]);
+            for(let i=0,l=states.length;i<l;i++) this.addOne(states[i]);
         }
 
-        addAnim(states) {
-            states = states.slice();
-            (function addStep(states) {
-                this.addWorker(states.shift());
-                if(states.length > 0)
-                    setTimeout(() => {addStep.call(this,states)},this.animStep);
-            }).call(this,states);
-        }
-
-        addWorker(s) {
-            s.changeContext = this.changeContext;
-            s.onChange = this.onChange;
+        addOne(s) {
             this.states.push(s);
-            this.fireOnChange({
-                eName: "add",
-                to: s,
-                from: this
-            });
         }
 
         subStates() {

@@ -9,12 +9,13 @@
         <link rel="stylesheet" href="style.css"/>
 
         <script src="js/state.js"></script>
+        <script src="js/animstate.js"></script>
         <script src="js/diagram.js"></script>
         <script>
             function genStateArray(c,i,a) {
                 a = a || []; i = i || 1;
                 if(!c) return a;
-                a.push(new State(String.fromCharCode(i+64)));
+                a.push(new AnimState(String.fromCharCode(i+64)));
                 return genStateArray(c-1,i+1,a);
             }
             var set1 = genStateArray(9),
