@@ -5,7 +5,7 @@ class Diagram {
         this.stateIDs = this.stateHolder.subStateIDs();
         this.states = this.stateHolder.subStates();
         this.buildData(this.states);
-        this.options = {};
+        this.options = {autoResize: true};
         this.network = new vis.Network(element,this.data,this.options);
     }
 
@@ -20,6 +20,20 @@ class Diagram {
         }
         if(ev.eName === "update") {
             this.updateNode(ev.node);
+        }
+    }
+
+    onResize(resizeFunc) {
+        this.resizeFunc = resizeFunc;
+        if(this.options.autoResize) {
+            this.options.autoResize = false;
+            this.updateOptions();
+            window.addEventListener("resize",()=>{
+                let s = this.resizeFunc();
+                this.network.setSize(s[0],s[1]);
+                this.network.redraw();
+                this.network.fit();
+            });
         }
     }
 
@@ -71,5 +85,9 @@ class Diagram {
             from: from.id,
             arrows: "to"
         });
+    }
+
+    updateOptions() {
+        this.network.setOptions(this.options);
     }
 }

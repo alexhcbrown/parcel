@@ -5,9 +5,12 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.min.css"/>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto:100,400" rel="stylesheet">
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
         <link rel="stylesheet" href="style.css"/>
-
         <script src="js/state.js"></script>
         <script src="js/animstate.js"></script>
         <script src="js/diagram.js"></script>
@@ -32,15 +35,44 @@
         </script>
     </head>
     <body>
-        <h1>Test</h1>
-        <div id="testContainer" class="stateDiagram"></div>
+        <div class="wrap">
+            <div class="diagram" id="diagramRef">
+                <div id="testContainer" class="stateDiagram"></div>
+            </div>
+            <aside class="drawer">
+                <header>
+                    <span class="logoText">Hazel</span>
+                    <span class="logoSubText">Parcel</span>
+                    <div class="colorBar">
+                        <div class="color"></div><div class="color"></div>
+                        <div class="color"></div><div class="color"></div>
+                    </div>
+                </header>
+                <h5>Grammar Rules</h5>
+                <pre>
+<code contenteditable="true" id="rules">{
+"Rule":[["A","B"],["C","D"]]
+}
+</code>
+                </pre>
+                <p>These Grammar Rules are converted into a Finite State Machine.</p>
+            </aside>
+        </div>
         <script>
             var testContainer = document.getElementById('testContainer'),
+                ref = document.getElementById("diagramRef"),
+                rules = document.getElementById("rules"),
                 diagramTest = new Diagram(
                     testContainer,
                     [set1[0],set2[4]]
                 );
+            diagramTest.onResize(() => {
+                return [ref.offsetWidth-20,ref.offsetHeight-20];
+            })
             diagramTest.makeLive();
+            rules.addEventListener("blur",()=>{
+                rules.innerHTML = hljs.highlightAuto(rules.innerText).value;
+            });
         </script>
     </body>
 </html>
