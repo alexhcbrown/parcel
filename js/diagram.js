@@ -90,4 +90,31 @@ class Diagram {
     updateOptions() {
         this.network.setOptions(this.options);
     }
+
+    diffStates(states) {
+        // have a parent state - starts as this.stateHolder
+        // have the current states - starts as parent.states
+        // have the new states - starts as states
+        // at each level add or remove unshared states and
+        // iterate on shared states that have not yet been a parent
+        (function diffWorker(parent,oldParents,states) {
+            let news = states.slice(),nss;
+            parent.states.forEach((oldState) => {
+                if(nss = states.find((ns) => ns.label === oldState.label)) {
+                    news = news.filter((ns) => ns.label !== oldState.label);
+                    if(!oldParents.find((oid) => oid === oldState.id)) {
+                        oldParents.push(oldState);
+                        diffWorker.call(this,oldState,oldParents,nss.states);
+                    }
+                }
+                else {
+                    this.nodes.remove({id:oldState.id});
+                }
+            });
+            news.forEach((ns) => {
+                parent.add([ns]);
+            });
+        }).call(this,this.stateHolder,[this.stateHolder.id],states);
+        //this.stateHolder.states = states;
+    }
 }

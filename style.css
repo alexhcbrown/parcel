@@ -91,3 +91,14 @@ h5 {
 code {
     padding: 1em 1.5em !important;
 }
+code.error {
+    border-bottom: 4px solid #806f1f;
+}
+code.error::after {
+    content: "Invalid JSON";
+    float: right;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.8em;
+    margin-bottom: -0.5em;
+    color: #806f1f;
+}

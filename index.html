@@ -14,25 +14,8 @@
         <script src="js/state.js"></script>
         <script src="js/animstate.js"></script>
         <script src="js/diagram.js"></script>
-        <script>
-            function genStateArray(c,i,a) {
-                a = a || []; i = i || 1;
-                if(!c) return a;
-                a.push(new AnimState(String.fromCharCode(i+64)));
-                return genStateArray(c-1,i+1,a);
-            }
-            var set1 = genStateArray(9),
-                set2 = genStateArray(9);
-            set1[0].add([set1[1],set1[2]]);
-            set1[1].add([set1[3]]);
-            //set1[3].add([set1[0]]);
-            set2[4].add([set2[1],set2[6]]);
-            set2[1].add([set2[3]]);
-            set2[3].add([set2[6]]);
-            set2[6].add([set2[4]]);
-            set2[5].add([set2[1]]);
-            //copy = set1[0].deepCopy();
-        </script>
+        <script src="js/grammar.js"></script>
+        <script src="js/animgrammar.js"></script>
     </head>
     <body>
         <div class="wrap">
@@ -62,9 +45,11 @@
             var testContainer = document.getElementById('testContainer'),
                 ref = document.getElementById("diagramRef"),
                 rules = document.getElementById("rules"),
+                gram = new AnimGrammar(),
+                d = gram.addRuleStates(JSON.parse(rules.innerText)),
                 diagramTest = new Diagram(
                     testContainer,
-                    [set1[0],set2[4]]
+                    Object.values(gram.ruleStates)
                 );
             diagramTest.onResize(() => {
                 return [ref.offsetWidth-20,ref.offsetHeight-20];
@@ -72,6 +57,15 @@
             diagramTest.makeLive();
             rules.addEventListener("blur",()=>{
                 rules.innerHTML = hljs.highlightAuto(rules.innerText).value;
+                gram.ruleStates = {};
+                try {
+                    gram.addRuleStates(JSON.parse(rules.innerText));
+                    diagramTest.diffStates(Object.values(gram.ruleStates));
+                    rules.classList.remove("error");
+                }
+                catch(e) {
+                    rules.classList.add("error");
+                }
             });
         </script>
     </body>
