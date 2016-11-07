@@ -25,15 +25,16 @@ class Diagram {
 
     onResize(resizeFunc) {
         this.resizeFunc = resizeFunc;
+        this.onResizeTrue = ()=>{
+            let s = this.resizeFunc();
+            this.network.setSize(s[0],s[1]);
+            this.network.redraw();
+            this.network.fit();
+        };
         if(this.options.autoResize) {
             this.options.autoResize = false;
             this.updateOptions();
-            window.addEventListener("resize",()=>{
-                let s = this.resizeFunc();
-                this.network.setSize(s[0],s[1]);
-                this.network.redraw();
-                this.network.fit();
-            });
+            window.addEventListener("resize",this.onResizeTrue);
         }
     }
 

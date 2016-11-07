@@ -89,6 +89,10 @@ class AnimState extends State {
         if(s instanceof AnimState) {
             s.changeContext = this.changeContext;
             s.onChange = this.onChange;
+            s.subStates().forEach(state => {
+                state.onChange = this.onChange;
+                state.changeContext = this.changeContext;
+            });
         }
         super.addOne(s);
         this.fireOnChange({

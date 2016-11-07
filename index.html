@@ -53,7 +53,8 @@
                 );
             diagramTest.onResize(() => {
                 return [ref.offsetWidth-20,ref.offsetHeight-20];
-            })
+            });
+            diagramTest.onResizeTrue();
             diagramTest.makeLive();
             rules.addEventListener("blur",()=>{
                 rules.innerHTML = hljs.highlightAuto(rules.innerText).value;
