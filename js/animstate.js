@@ -73,7 +73,8 @@ class AnimState extends State {
         this.fireOnChange({
             eName: "update",
             node: this
-        })}
+        })
+    }
 
     addAnim(states) {
         states = states.slice();
