@@ -1,7 +1,8 @@
 (function(w){
 
     let stateCount = 0,
-        stateList = [];
+        stateList = [],
+        labelNames = ["endable","ruleState","terminal"];
 
     class State {
         constructor(label) {
@@ -14,7 +15,14 @@
         copy() {
             let copy = new State(this.label);
             copy.states = this.states;
+            copy.setLabelsFromNode(this);
             return copy;
+        }
+
+        setLabelsFromNode(node) {
+            labelNames.forEach((n)=>{
+                this[n] = node[n]
+            });
         }
 
         deepCopy(copiedIDs,copied) {
@@ -48,7 +56,10 @@
         mergeOne(s) {
             let current = this.select(s.label);
             if(typeof current === "undefined") this.add([s.deepCopy()]);
-            else current.merge(s.states);
+            else {
+                current.endable = current.endable || s.endable;
+                current.merge(s.states)
+            };
         }
 
         select(label) {
