@@ -1,5 +1,19 @@
 class Diagram {
     constructor(element,states) {
+        this.styleAttributeNames = [
+            "ruleState",
+            "endable",
+            "terminal",
+            "mergeCentre",
+            "default"
+        ];
+        this.styles = {
+            "default": "#306988",
+            "ruleState": "#27573a",
+            "endable": "#a75d28",
+            "mergeCentre": "#27573a",
+            "terminal": "#519ec8"
+        };
         this.stateHolder = new AnimState("DiagramParent");
         this.stateHolder.add(states);
         this.stateIDs = this.stateHolder.subStateIDs();
@@ -76,15 +90,24 @@ class Diagram {
         return {
             id: node.id,
             label: node.label,
-            color: node.mergeCentre ? "lightGreen" : "lightBlue"
+            color: this.getStyle(node),
+            shape: "box",
+            font: {size:15, color:'white', face:'"Open Sans",sans-serif'}
         }
+    }
+
+    getStyle(node) {
+        return this.styles[this.styleAttributeNames.find(
+            (aN) => node[aN] || aN === "default"
+        )];
     }
 
     addEdge(to,from) {
         this.edges.add({
             to: to.id,
             from: from.id,
-            arrows: "to"
+            arrows: "to",
+            color: "#306988"
         });
     }
 
@@ -103,6 +126,7 @@ class Diagram {
             parent.states.forEach((oldState) => {
                 if(nss = states.find((ns) => ns.label === oldState.label)) {
                     news = news.filter((ns) => ns.label !== oldState.label);
+                    oldState.setLabelsFromNode(nss);
                     if(!oldParents.find((oid) => oid === oldState.id)) {
                         oldParents.push(oldState);
                         diffWorker.call(this,oldState,oldParents,nss.states);

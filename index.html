@@ -33,8 +33,33 @@
                 </header>
                 <h5>Grammar Rules</h5>
                 <pre>
+<!-- <code contenteditable="true" id="rules">{
+"Syntax":[
+    ["Rule"],
+    ["Rule","Syntax"]
+],
+"Rule":[
+    ["Opt-WS","RuleName",":",
+    "Opt-WS","Expr","LineEnd"]
+],
+"Opt-WS":[
+    ["WS","Opt-WS"],
+    ["ε"]
+],
+"Expr":[
+    ["List"],
+    ["List", "Opt-WS", "|", "Opt-WS", "Expr"]
+],
+"List":[
+    ["Term"],
+    ["Term", "Opt-WS", "List"]
+]
+}
+</code> -->
 <code contenteditable="true" id="rules">{
-"Rule":[["A","B"],["C","D"]]
+"S":[["1","A"],["D","2","E"],["C","S"]],
+"1":[["B","2","E","2"],["B"]],
+"2":[["F","2"],["S"]]
 }
 </code>
                 </pre>
@@ -61,12 +86,13 @@
                 gram.ruleStates = {};
                 try {
                     gram.addRuleStates(JSON.parse(rules.innerText));
-                    diagramTest.diffStates(Object.values(gram.ruleStates));
                     rules.classList.remove("error");
                 }
                 catch(e) {
                     rules.classList.add("error");
+                    return;
                 }
+                diagramTest.diffStates(Object.values(gram.ruleStates));
             });
         </script>
     </body>
